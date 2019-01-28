@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "containerSasToken": { "type": "string" },
+	  "uriUsername": { "type": "string" }
+	  "gitReponame": { "type": "string" }
+    },
+	"variables": {
+		"uriPrefix": "https://",
+        "uriSuffixgithub": "@github.com/",
+		"uriSuffixcolon": ":",
+		"uriSuffixslash": "/",
+        "templateLinkUri": "[concat(variables('uriPrefix'),parameters('uriUsername'),variables('uriSuffixcolon'),parameters('containerSasToken'),variables('uriSuffixgithub'),variables('uriSuffixslash'),parameters('uriUsername'),variables('uriSuffixslash'),parameters('gitReponame'))]"
+	},
+    "resources": [
+	  {
+	    "apiVersion": "2017-05-10",
+	    "name": "linkedTemplate",
+	    "type": "Microsoft.Resources/deployments",
+	    "properties": {
+		  "mode": "Incremental",
+		  "templateLink": {
+		    "uri": "variables('templateLinkUri')",
+		    "contentVersion": "1.0.0.0"
+		  }
+	    }
+	  }
+    ],
+    "outputs": {
+        "messageFromLinkedTemplate": {
+            "type": "string",
+            "value": "[reference('linkedTemplate').outputs.greetingMessage.value]"
+        }
+    }
+}
